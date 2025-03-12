@@ -5,8 +5,9 @@
 #include "window.h"
 #include "state.h"
 
-bool parse_args(int argc, char **argv)
+bool check_args(int argc, char **argv)
 {
+    (void) argv;
     if (argc <= 1) {
         fprintf(stderr, "ERROR: Need atleast 1 image to open.");
         return false;
@@ -54,6 +55,10 @@ void load_image(struct window_t *win, struct state_t *state, const char *img_pat
 
 int main(int argc, char **argv)
 {
+
+    bool valid_args = check_args(argc, argv);
+    if (!valid_args) return -1;
+
     struct state_t state = {
         .zoom = 1.0f,
         .texture = NULL,

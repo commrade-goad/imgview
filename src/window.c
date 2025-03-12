@@ -21,8 +21,13 @@ int init_SDL(struct window_t *w)
     return 0;
 }
 
+void set_window_size(struct window_t *win) {
+    SDL_SetWindowSize(win->win, win->state->texture->w, win->state->texture->h);
+}
+
 void window_loop(struct window_t *w)
 {
+    set_window_size(w);
     SDL_Event event;
     while (!w->quit) {
         while (SDL_PollEvent(&event)) {
