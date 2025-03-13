@@ -18,7 +18,7 @@ endif
 
 executable(
   pname,
-  'src/main.c', 'src/window.c', 'src/state.c', 'src/image.c',
+  'src/main.c', 'src/window.c', 'src/state.c', 'src/image.c', 'src/wcontrol.c',
   dependencies: [imlib2, sdl3],
   install : true,
   link_args : ['-lm']

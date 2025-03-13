@@ -1,10 +1,8 @@
 #include "window.h"
-#include <math.h>
+#include "wcontrol.h"
 #include <stdio.h>
 
-float clamp(float value, float min, float max) {
-    return fminf(fmaxf(value, min), max);
-}
+#define SCROLL_SPEED 400
 
 int init_SDL(struct window_t *w) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -64,23 +62,6 @@ struct window_t init_window() {
     };
 }
 
-void do_zoom(struct window_t *w) {
-    w->state->rec.w = w->state->texture->w * w->state->zoom;
-    w->state->rec.h = w->state->texture->h * w->state->zoom;
-}
-
-void do_move(struct window_t *w, float dx, float dy) {
-    float new_posx = w->state->rec.x + dx;
-    float new_posy = w->state->rec.y + dy;
-    // make it so that cant move the image out of the window
-    if (new_posx > w->state->rec.w * 0.2)
-        new_posx = w->state->rec.x;
-    if (new_posy > w->state->rec.h * 0.2)
-        new_posy = w->state->rec.y;
-    w->state->rec.y = new_posy;
-    w->state->rec.x = new_posx;
-}
-
 void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time) {
     double future_time = SDL_GetTicksNS();
     double dt = (double)(future_time - *current_time) / 1000000000.0;
@@ -92,15 +73,15 @@ void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time) {
         return;
     }
 
-    static const float scroll_speed = 400.0;
+    float movement = w->state->zoom * SCROLL_SPEED;
     if (key_state[SDL_SCANCODE_H])
-        do_move(w, scroll_speed * dt, 0);
+        do_move(w, movement * dt, 0);
     if (key_state[SDL_SCANCODE_J])
-        do_move(w, 0, -scroll_speed * dt);
+        do_move(w, 0, -movement * dt);
     if (key_state[SDL_SCANCODE_K])
-        do_move(w, 0, scroll_speed * dt);
+        do_move(w, 0, movement * dt);
     if (key_state[SDL_SCANCODE_L])
-        do_move(w, -scroll_speed * dt, 0);
+        do_move(w, -movement * dt, 0);
     if (key_state[SDL_SCANCODE_MINUS]) {
         w->state->zoom -= 0.07;
         do_zoom(w);
