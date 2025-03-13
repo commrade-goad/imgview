@@ -4,7 +4,8 @@
 
 #define SCROLL_SPEED 400
 
-int init_SDL(struct window_t *w) {
+int init_SDL(struct window_t *w)
+{
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "ERROR: SDL could not initialize! SDL_Error: %s\n",
                 SDL_GetError());
@@ -23,11 +24,13 @@ int init_SDL(struct window_t *w) {
     return 0;
 }
 
-void set_window_size(struct window_t *win) {
+void set_window_size(struct window_t *win)
+{
     SDL_SetWindowSize(win->win, win->state->texture->w, win->state->texture->h);
 }
 
-void window_loop(struct window_t *w) {
+void window_loop(struct window_t *w)
+{
     set_window_size(w);
     SDL_Event event;
 
@@ -47,13 +50,15 @@ void window_loop(struct window_t *w) {
     }
 }
 
-void deinit_SDL(struct window_t *w) {
+void deinit_SDL(struct window_t *w)
+{
     SDL_DestroyRenderer(w->ren);
     SDL_DestroyWindow(w->win);
     SDL_Quit();
 }
 
-struct window_t init_window() {
+struct window_t init_window()
+{
     return (struct window_t){
         .win = NULL,
         .ren = NULL,
@@ -62,7 +67,8 @@ struct window_t init_window() {
     };
 }
 
-void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time) {
+void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time)
+{
     double future_time = SDL_GetTicksNS();
     double dt = (double)(future_time - *current_time) / 1000000000.0;
     *current_time = future_time;
@@ -101,4 +107,14 @@ void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time) {
             return;
         }
     }
+}
+
+struct vec2_t get_window_size(struct window_t *w)
+{
+    int x, y;
+    SDL_GetWindowSizeInPixels(w->win, &x, &y);
+    return (struct vec2_t){
+        .x = x,
+        .y = y,
+    };
 }

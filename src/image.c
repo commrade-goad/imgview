@@ -1,7 +1,8 @@
 #include "image.h"
 #include <stdio.h>
 
-void generate_texture(DATA32 *image_data, struct window_t *w) {
+void generate_texture(DATA32 *image_data, struct window_t *w)
+{
     int img_width = imlib_image_get_width();
     int img_height = imlib_image_get_height();
 
