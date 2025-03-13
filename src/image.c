@@ -26,6 +26,21 @@ void generate_texture(DATA32 *image_data, struct window_t *w)
     SDL_DestroySurface(surface);
 }
 
+void center_image(struct window_t *win)
+{
+    struct vec2_t winsize = get_window_size(win);
+    win->state->rec.y = (winsize.y - win->state->rec.h) / 2;
+    win->state->rec.x = (winsize.x - win->state->rec.w) / 2;
+
+    if (winsize.x < winsize.y) {
+        win->state->rec.w = winsize.x;
+        win->state->rec.h = (winsize.x / win->state->texture->w) * win->state->texture->h;
+    } else {
+        win->state->rec.h = winsize.y;
+        win->state->rec.w = (winsize.y / win->state->texture->h) * win->state->texture->w;
+    }
+}
+
 void load_image(struct window_t *win, const char *img_path)
 {
     imlib_set_cache_size(10 * 1024 * 1024);
@@ -42,6 +57,8 @@ void load_image(struct window_t *win, const char *img_path)
 
     DATA32 *image_data = imlib_image_get_data();
     generate_texture(image_data, win);
+
+    center_image(win);
 
     imlib_free_image();
 }

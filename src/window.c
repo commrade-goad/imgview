@@ -1,6 +1,8 @@
 #include "window.h"
 #include "wcontrol.h"
+#include "image.h"
 #include <stdio.h>
+#include <math.h>
 
 #define SCROLL_SPEED 400
 
@@ -35,9 +37,15 @@ void window_loop(struct window_t *w)
     SDL_Event event;
 
     Uint64 current_time = SDL_GetTicksNS();
+    double future_time = SDL_GetTicksNS();
 
     while (!w->quit) {
-        handle_event(w, &event, &current_time);
+        future_time = SDL_GetTicksNS();
+        w->dt = (double)(future_time - current_time) / 1000000000.0;
+        current_time = future_time;
+
+        if (w->state->can_reset) center_image(w);
+        handle_event(w, &event);
         SDL_SetRenderDrawColor(w->ren, 0x1e, 0x1e, 0x2e, 255);
         SDL_RenderClear(w->ren);
 
@@ -64,47 +72,49 @@ struct window_t init_window()
         .ren = NULL,
         .quit = false,
         .state = NULL,
+        .dt = 0,
     };
 }
 
-void handle_event(struct window_t *w, SDL_Event *e, Uint64 *current_time)
+void handle_event(struct window_t *w, SDL_Event *e)
 {
-    double future_time = SDL_GetTicksNS();
-    double dt = (double)(future_time - *current_time) / 1000000000.0;
-    *current_time = future_time;
-
     const bool *key_state = SDL_GetKeyboardState(NULL);
     if (key_state[SDL_SCANCODE_ESCAPE]) {
         w->quit = true;
         return;
     }
 
-    float movement = w->state->zoom * SCROLL_SPEED;
+    float movement = SCROLL_SPEED;
+
+    const float zoom_incr = 0.1;
     if (key_state[SDL_SCANCODE_H])
-        do_move(w, movement * dt, 0);
+        do_move(w, movement, 0);
     if (key_state[SDL_SCANCODE_J])
-        do_move(w, 0, -movement * dt);
+        do_move(w, 0, -movement);
     if (key_state[SDL_SCANCODE_K])
-        do_move(w, 0, movement * dt);
+        do_move(w, 0, movement);
     if (key_state[SDL_SCANCODE_L])
-        do_move(w, -movement * dt, 0);
-    if (key_state[SDL_SCANCODE_MINUS]) {
-        w->state->zoom -= 0.07;
-        do_zoom(w);
-    }
-    if (key_state[SDL_SCANCODE_EQUALS]) {
-        w->state->zoom += 0.07;
-        do_zoom(w);
-    }
-    if (key_state[SDL_SCANCODE_R]) {
-        w->state->rec.x = 0;
-        w->state->rec.y = 0;
-    }
+        do_move(w, -movement, 0);
 
     while (SDL_PollEvent(e)) {
-        if (e->type == SDL_EVENT_QUIT) {
-            w->quit = true;
-            return;
+        switch (e->type) {
+            case SDL_EVENT_QUIT:
+                w->quit = true;
+                return;
+            case SDL_EVENT_KEY_DOWN:
+                if (e->key.key == SDLK_MINUS) {
+                    do_zoom(w, -zoom_incr);
+                }
+                if (e->key.key == SDLK_EQUALS) {
+                    do_zoom(w, zoom_incr);
+                }
+                if (e->key.key == SDLK_R) {
+                    w->state->can_reset = true;
+                    w->state->zoom = 1.0;
+                }
+                break;
+            default:
+                break;
         }
     }
 }
@@ -117,4 +127,10 @@ struct vec2_t get_window_size(struct window_t *w)
         .x = x,
         .y = y,
     };
+}
+
+void resize_window(struct window_t *win, int w, int h)
+{
+    SDL_SetWindowSize(win->win, w, h);
+    set_window_size(win);
 }

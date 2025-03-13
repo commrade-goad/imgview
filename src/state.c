@@ -12,5 +12,6 @@ struct state_t init_state()
         .texture = NULL,
         .rec = {0},
         .next = NULL,
+        .can_reset = true,
     };
 }

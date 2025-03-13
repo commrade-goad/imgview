@@ -6,6 +6,7 @@
 #include "window.h"
 
 void load_image(struct window_t *win, const char *img_path);
+void center_image(struct window_t *win);
 
 #endif // IMAGE_H_
 

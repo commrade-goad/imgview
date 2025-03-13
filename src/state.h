@@ -7,6 +7,7 @@ struct state_t {
     SDL_Texture *texture;
     float zoom;
     SDL_FRect rec;
+    bool can_reset;
     struct state_t *next;
 };
 

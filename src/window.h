@@ -9,6 +9,7 @@ struct window_t {
     SDL_Renderer *ren;
     bool quit;
     struct state_t *state;
+    double dt;
 };
 
 struct vec2_t {
@@ -20,7 +21,8 @@ struct window_t init_window();
 int init_SDL(struct window_t *w);
 void window_loop(struct window_t *w);
 void deinit_SDL(struct window_t *w);
-void handle_event(struct window_t *w, SDL_Event *e, Uint64 *start_time);
+void handle_event(struct window_t *w, SDL_Event *e);
+void resize_window(struct window_t *win, int w, int h);
 struct vec2_t get_window_size(struct window_t *w);
 
 #endif // WINDOW_H_
