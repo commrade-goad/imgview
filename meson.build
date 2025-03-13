@@ -12,9 +12,14 @@ pname = 'imgview'
 imlib2 = dependency('imlib2', method: 'pkg-config')
 sdl3 = dependency('sdl3', method: 'pkg-config')
 
+if get_option('buildtype') == 'debugme'
+  add_project_arguments('-ggdb',  language : 'c')
+endif
+
 executable(
   pname,
-  'src/main.c', 'src/window.c', 'src/state.c',
+  'src/main.c', 'src/window.c', 'src/state.c', 'src/image.c',
   dependencies: [imlib2, sdl3],
-  install : true
+  install : true,
+  link_args : ['-lm']
 )

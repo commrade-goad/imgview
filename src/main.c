@@ -1,9 +1,12 @@
 #include <SDL3/SDL.h>
 #include <Imlib2.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "window.h"
 #include "state.h"
+#include "image.h"
 
 bool check_args(int argc, char **argv)
 {
@@ -15,61 +18,33 @@ bool check_args(int argc, char **argv)
     return true;
 }
 
-/* WIP */
-void load_image(struct window_t *win, struct state_t *state, const char *img_path) {
-    imlib_set_cache_size(10 * 1024 * 1024);
-    Imlib_Image img = imlib_load_image(img_path);
-    if (!img) {
-        fprintf(stderr, "ERROR: Failed to load image %s\n", img_path);
-        SDL_Quit();
-        return;
-    }
-    imlib_context_set_image(img);
-    if (!imlib_image_has_alpha()) {
-        imlib_image_set_has_alpha(1);
-    }
-
-    int img_width = imlib_image_get_width();
-    int img_height = imlib_image_get_height();
-    DATA32 *image_data = imlib_image_get_data();
-
-    SDL_Surface *surface = SDL_CreateSurfaceFrom(
-        img_width, img_height,
-        SDL_PIXELFORMAT_BGRA32,
-        image_data,
-        img_width * 4
-    );
-
-    if (!surface) {
-        fprintf(stderr, "ERROR: Failed to create the surface %s\n", SDL_GetError());
-        return;
-    }
-    state->texture = SDL_CreateTextureFromSurface(win->ren, surface);
-    if (!state->texture) {
-        fprintf(stderr, "ERROR: Failed to create the texture from the surface %s\n", SDL_GetError());
-        return;
-    }
-    SDL_DestroySurface(surface);
-    imlib_free_image();
-}
-
 int main(int argc, char **argv)
 {
 
     bool valid_args = check_args(argc, argv);
     if (!valid_args) return -1;
 
-    struct state_t state = {
-        .zoom = 1.0f,
-        .texture = NULL,
-        .rec = {0},
-    };
+    const char *session_type = getenv("XDG_SESSION_TYPE");
+    if (!session_type) {
+        fprintf(stderr, "ERROR: Could not find `XDG_SESSION_TYPE` env var.\n");
+        return -1;
+    }
+    if (SDL_strcmp(session_type, "wayland") == 0) {
+        // We're in a Wayland session, set SDL to use Wayland
+        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+        // Alternative method if the above doesn't work:
+        // setenv("SDL_VIDEODRIVER", "wayland", 1);
+    }
 
-    struct window_t w = window_t_init();
+    struct state_t state = init_state();
+
+    struct window_t w = init_window();
     if (init_SDL(&w) < 0) {
         return 1;
     }
-    load_image(&w, &state, argv[1]);
+    w.state = &state;
+
+    load_image(&w, argv[1]);
 
     state.rec = (SDL_FRect) {
         .w = state.texture->w,
@@ -77,7 +52,6 @@ int main(int argc, char **argv)
         .x = 0,
         .y = 0,
     };
-    w.state = &state;
 
     window_loop(&w);
 
