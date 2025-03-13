@@ -30,10 +30,7 @@ int main(int argc, char **argv)
         return -1;
     }
     if (SDL_strcmp(session_type, "wayland") == 0) {
-        // We're in a Wayland session, set SDL to use Wayland
         SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
-        // Alternative method if the above doesn't work:
-        // setenv("SDL_VIDEODRIVER", "wayland", 1);
     }
 
     struct state_t state = init_state();
