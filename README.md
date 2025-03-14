@@ -22,7 +22,9 @@ meson compile -C build
 | Key  | Function                 |
 |------|--------------------------|
 | hjkl | move around              |
+| +, - | zoom in and zoom out     |
 | r    | reset the view to fit in |
+| ;    | toggle command mode      |
 
 ## Note
 still in _dev_ it didn't support alot of stuff example:
