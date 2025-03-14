@@ -34,6 +34,26 @@ void set_window_size_fromtxt(struct window_t *win) {
     }
 }
 
+void render(struct window_t *w) {
+    SDL_SetRenderDrawColor(w->ren, 0x1e, 0x1e, 0x2e, 255);
+    SDL_RenderClear(w->ren);
+
+    // render the image texture
+    if (w->state->texture) {
+        SDL_RenderTexture(w->ren, w->state->texture, NULL, &w->state->rec);
+    }
+
+    if (w->state->command_mode) {
+
+        SDL_SetRenderDrawColor(w->ren, 0xff, 0xff, 0xff, 255);
+        struct vec2_t wsize = get_window_size(w);
+        SDL_FRect rec = {0, wsize.y - 20, wsize.x, 20};
+        SDL_RenderFillRect(w->ren, &rec);
+    }
+
+    SDL_RenderPresent(w->ren);
+}
+
 void window_loop(struct window_t *w) {
     set_window_size_fromtxt(w);
     SDL_Event event;
@@ -49,15 +69,7 @@ void window_loop(struct window_t *w) {
         if (w->state->can_reset)
             center_image(w);
         handle_event(w, &event);
-        SDL_SetRenderDrawColor(w->ren, 0x1e, 0x1e, 0x2e, 255);
-        SDL_RenderClear(w->ren);
-
-        // render the image texture
-        if (w->state->texture) {
-            SDL_RenderTexture(w->ren, w->state->texture, NULL, &w->state->rec);
-        }
-
-        SDL_RenderPresent(w->ren);
+        render(w);
     }
 }
 

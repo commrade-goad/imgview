@@ -1,7 +1,10 @@
-#include "wcontrol.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+#include "eval.h"
+#include "str.h"
+#include "wcontrol.h"
 
 bool check_viewport(struct window_t *w) {
     if ((w->state->rec.x + w->state->rec.w) <= 0) {
@@ -100,15 +103,30 @@ void handle_event(struct window_t *w, SDL_Event *e) {
             }
             // only available in command mode
             if (w->state->command_mode) {
-                for (int i = 0; i < 10; i++) {
-                    if (e->key.key == SDLK_0 + i) {
-                        printf("called %d\n", i);
+                if (e->key.key == SDLK_BACKSPACE) {
+                    str_pop_chr(&w->state->cmd_buffer);
+                } else if (e->key.key == SDLK_RETURN) {
+                    w->state->command_mode = false;
+                    evaluate_command(w);
+                    /*printf("called %s\n", w->state->cmd_buffer.data);*/
+                    str_clear(&w->state->cmd_buffer);
+                } else if (e->key.key == SDLK_ESCAPE) {
+                    w->state->command_mode = false;
+                    str_clear(&w->state->cmd_buffer);
+                } else {
+                    // ascii range from space to z to cover all of the needed
+                    // keys
+                    if (e->key.key >= SDLK_SPACE && e->key.key <= SDLK_Z) {
+                        str_push_chr(&w->state->cmd_buffer, e->key.key);
                     }
                 }
             }
             // global hotkey.
             if (e->key.key == SDLK_SEMICOLON) {
                 w->state->command_mode = !w->state->command_mode;
+                if (!w->state->command_mode) {
+                    str_clear(&w->state->cmd_buffer);
+                }
             }
             break;
         default:

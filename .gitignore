@@ -2,3 +2,4 @@
 *.jpeg
 build
 .cache
+compile_commands.json

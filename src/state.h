@@ -2,6 +2,7 @@
 #define STATE_H_
 
 #include <SDL3/SDL.h>
+#include "str.h"
 
 struct state_t {
     SDL_Texture *texture;
@@ -9,8 +10,7 @@ struct state_t {
     SDL_FRect rec;
     bool can_reset;
     bool command_mode;
-    char cmd_buffer[8];
-    struct state_t *next;
+    str_t cmd_buffer;
 };
 
 void deinit_state(struct state_t *state);

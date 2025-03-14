@@ -23,5 +23,6 @@ void window_loop(struct window_t *w);
 void deinit_SDL(struct window_t *w);
 void resize_window(struct window_t *win, int w, int h);
 struct vec2_t get_window_size(struct window_t *w);
+void render(struct window_t *w);
 
 #endif // WINDOW_H_
