@@ -1,16 +1,15 @@
-#include <SDL3/SDL.h>
 #include <Imlib2.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "window.h"
-#include "state.h"
 #include "image.h"
+#include "state.h"
+#include "window.h"
 
-bool check_args(int argc, char **argv)
-{
-    (void) argv;
+bool check_args(int argc, char **argv) {
+    (void)argv;
     if (argc <= 1) {
         fprintf(stderr, "ERROR: Need atleast 1 image to open.");
         return false;
@@ -18,11 +17,10 @@ bool check_args(int argc, char **argv)
     return true;
 }
 
-int main(int argc, char **argv)
-{
-
+int main(int argc, char **argv) {
     bool valid_args = check_args(argc, argv);
-    if (!valid_args) return -1;
+    if (!valid_args)
+        return -1;
 
     const char *session_type = getenv("XDG_SESSION_TYPE");
     if (!session_type) {
@@ -43,7 +41,7 @@ int main(int argc, char **argv)
 
     load_image(&w, argv[1]);
 
-    state.rec = (SDL_FRect) {
+    state.rec = (SDL_FRect){
         .w = state.texture->w,
         .h = state.texture->h,
         .x = 0,

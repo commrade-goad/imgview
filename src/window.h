@@ -9,11 +9,11 @@ struct window_t {
     SDL_Renderer *ren;
     bool quit;
     struct state_t *state;
-    double dt;
+    size_t dt;
 };
 
 struct vec2_t {
-    float x, y;
+    size_t x, y;
 };
 
 struct window_t init_window();

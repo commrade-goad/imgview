@@ -1,48 +1,54 @@
 #include "image.h"
+#include <math.h>
 #include <stdio.h>
 
-void generate_texture(DATA32 *image_data, struct window_t *w)
-{
+void generate_texture(DATA32 *image_data, struct window_t *w) {
     int img_width = imlib_image_get_width();
     int img_height = imlib_image_get_height();
 
-    SDL_Surface *surface = SDL_CreateSurfaceFrom(
-        img_width, img_height,
-        SDL_PIXELFORMAT_BGRA32,
-        image_data,
-        img_width * 4
-    );
+    SDL_Surface *surface =
+        SDL_CreateSurfaceFrom(img_width, img_height, SDL_PIXELFORMAT_BGRA32,
+                              image_data, img_width * 4);
 
     if (!surface) {
-        fprintf(stderr, "ERROR: Failed to create the surface %s\n", SDL_GetError());
+        fprintf(stderr, "ERROR: Failed to create the surface %s\n",
+                SDL_GetError());
         return;
     }
-    if (w->ren == NULL || w->state == NULL) return;
+    if (w->ren == NULL || w->state == NULL)
+        return;
     w->state->texture = SDL_CreateTextureFromSurface(w->ren, surface);
     if (!w->state->texture) {
-        fprintf(stderr, "ERROR: Failed to create the texture from the surface %s\n", SDL_GetError());
+        fprintf(stderr,
+                "ERROR: Failed to create the texture from the surface %s\n",
+                SDL_GetError());
         return;
     }
     SDL_DestroySurface(surface);
 }
 
-void center_image(struct window_t *win)
-{
+void center_image(struct window_t *win) {
+    struct state_t *s = win->state;
     struct vec2_t winsize = get_window_size(win);
-    win->state->rec.y = (winsize.y - win->state->rec.h) / 2;
-    win->state->rec.x = (winsize.x - win->state->rec.w) / 2;
 
-    if (winsize.x < winsize.y) {
-        win->state->rec.w = winsize.x;
-        win->state->rec.h = (winsize.x / win->state->texture->w) * win->state->texture->h;
+    double window_aspect = (double)winsize.x / winsize.y;
+    double image_aspect = (double)s->texture->w / s->texture->h;
+
+    if (window_aspect < image_aspect) {
+        s->rec.w = winsize.x;
+        s->rec.h = round(winsize.x / image_aspect);
     } else {
-        win->state->rec.h = winsize.y;
-        win->state->rec.w = (winsize.y / win->state->texture->h) * win->state->texture->w;
+        s->rec.h = winsize.y;
+        s->rec.w = round(winsize.y * image_aspect);
     }
+
+    s->rec.x = round((winsize.x - s->rec.w) / 2);
+    s->rec.y = round((winsize.y - s->rec.h) / 2);
+
+    s->zoom = round((s->rec.w / s->texture->w) * 100);
 }
 
-void load_image(struct window_t *win, const char *img_path)
-{
+void load_image(struct window_t *win, const char *img_path) {
     imlib_set_cache_size(10 * 1024 * 1024);
     Imlib_Image img = imlib_load_image(img_path);
     if (!img) {
@@ -62,4 +68,3 @@ void load_image(struct window_t *win, const char *img_path)
 
     imlib_free_image();
 }
-
