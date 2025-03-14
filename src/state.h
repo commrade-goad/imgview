@@ -8,6 +8,8 @@ struct state_t {
     int zoom;
     SDL_FRect rec;
     bool can_reset;
+    bool command_mode;
+    char cmd_buffer[8];
     struct state_t *next;
 };
 

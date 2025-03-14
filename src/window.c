@@ -3,6 +3,8 @@
 #include "wcontrol.h"
 #include <stdio.h>
 
+#define WINDOW_SIZE_LIMIT (struct vec2_t){1280, 720}
+
 int init_SDL(struct window_t *w) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "ERROR: SDL could not initialize! SDL_Error: %s\n",
@@ -23,12 +25,17 @@ int init_SDL(struct window_t *w) {
     return 0;
 }
 
-void set_window_size(struct window_t *win) {
-    SDL_SetWindowSize(win->win, win->state->texture->w, win->state->texture->h);
+void set_window_size_fromtxt(struct window_t *win) {
+    if (win->state->texture->w > (int)WINDOW_SIZE_LIMIT.x ||
+        win->state->texture->h > (int)WINDOW_SIZE_LIMIT.y) {
+        resize_window(win, WINDOW_SIZE_LIMIT.x, WINDOW_SIZE_LIMIT.y);
+    } else {
+        resize_window(win, win->state->texture->w, win->state->texture->h);
+    }
 }
 
 void window_loop(struct window_t *w) {
-    set_window_size(w);
+    set_window_size_fromtxt(w);
     SDL_Event event;
 
     Uint64 current_time = SDL_GetTicksNS();
@@ -70,48 +77,6 @@ struct window_t init_window() {
     };
 }
 
-void handle_event(struct window_t *w, SDL_Event *e) {
-    const bool *key_state = SDL_GetKeyboardState(NULL);
-    if (key_state[SDL_SCANCODE_ESCAPE]) {
-        w->quit = true;
-        return;
-    }
-
-    int movement = 20;
-    const int zoom_incr = 10;
-
-    if (key_state[SDL_SCANCODE_H])
-        do_move(w, movement, 0);
-    if (key_state[SDL_SCANCODE_J])
-        do_move(w, 0, -movement);
-    if (key_state[SDL_SCANCODE_K])
-        do_move(w, 0, movement);
-    if (key_state[SDL_SCANCODE_L])
-        do_move(w, -movement, 0);
-
-    while (SDL_PollEvent(e)) {
-        switch (e->type) {
-        case SDL_EVENT_QUIT:
-            w->quit = true;
-            return;
-        case SDL_EVENT_KEY_DOWN:
-            if (e->key.key == SDLK_MINUS) {
-                do_zoom(w, -zoom_incr);
-            }
-            if (e->key.key == SDLK_EQUALS) {
-                do_zoom(w, zoom_incr);
-            }
-            if (e->key.key == SDLK_R) {
-                w->state->can_reset = true;
-                w->state->zoom = 100;
-            }
-            break;
-        default:
-            break;
-        }
-    }
-}
-
 struct vec2_t get_window_size(struct window_t *w) {
     int x, y;
     SDL_GetWindowSizeInPixels(w->win, &x, &y);
@@ -122,6 +87,8 @@ struct vec2_t get_window_size(struct window_t *w) {
 }
 
 void resize_window(struct window_t *win, int w, int h) {
-    SDL_SetWindowSize(win->win, w, h);
-    set_window_size(win);
+    if (!SDL_SetWindowSize(win->win, w, h)) {
+        fprintf(stderr, "ERROR: Could not resize window %s\n", SDL_GetError());
+        return;
+    }
 }

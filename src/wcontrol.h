@@ -6,5 +6,6 @@
 void do_zoom(struct window_t *w, int zoom_lvl);
 void do_move(struct window_t *w, int dx, int dy);
 bool check_viewport(struct window_t *w);
+void handle_event(struct window_t *w, SDL_Event *e);
 
 #endif // WCONTROL_H_

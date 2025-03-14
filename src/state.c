@@ -9,5 +9,7 @@ struct state_t init_state() {
         .rec = {0},
         .next = NULL,
         .can_reset = true,
+        .command_mode = false,
+        .cmd_buffer = {0},
     };
 }
