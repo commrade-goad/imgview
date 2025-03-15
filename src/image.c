@@ -1,7 +1,7 @@
-#include <math.h>
 #include <stdio.h>
+#include <math.h>
 
-#include "image.h"
+#include "include/image.h"
 
 void generate_texture(DATA32 *image_data, window_t *w) {
     int img_width = imlib_image_get_width();

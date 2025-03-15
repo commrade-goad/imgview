@@ -1,10 +1,10 @@
 #include <stdio.h>
 
-#include "image.h"
-#include "wcontrol.h"
-#include "window.h"
+#include "include/image.h"
+#include "include/wcontrol.h"
+#include "include/window.h"
 
-int window_init(window_t *w) {
+int window_SDL_init(window_t *w) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "ERROR: SDL could not initialize! SDL_Error: %s\n",
                 SDL_GetError());
@@ -78,7 +78,7 @@ void window_deinit(window_t *w) {
     SDL_Quit();
 }
 
-window_t init_window() {
+window_t window_init() {
     return (window_t){
         .win = NULL,
         .ren = NULL,

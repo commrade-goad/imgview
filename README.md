@@ -30,4 +30,3 @@ meson compile -C build
 still in _dev_ it didn't support alot of stuff example:
 
 - open more than 1 file.
-- no args support yet.

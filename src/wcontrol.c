@@ -2,9 +2,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "eval.h"
-#include "str.h"
-#include "wcontrol.h"
+#include "include/eval.h"
+#include "include/str.h"
+#include "include/wcontrol.h"
 
 void wcontrol_zoom(window_t *w, int zoom_lvl) {
     state_t *s = w->state;

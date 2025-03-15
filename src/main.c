@@ -4,45 +4,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "image.h"
-#include "state.h"
-#include "window.h"
+#include "include/image.h"
+#include "include/state.h"
+#include "include/window.h"
+#include "include/argparse.h"
 
-bool check_args(int argc, char **argv) {
-    (void)argv;
-    if (argc <= 1) {
-        fprintf(stderr, "ERROR: Need atleast 1 image to open.");
-        return false;
-    }
-    return true;
-}
+int main(int argc, char *argv[]) {
 
-int main(int argc, char **argv) {
-    bool valid_args = check_args(argc, argv);
+    // check args.
+    bool valid_args = check_args(argc, argv, 2);
     if (!valid_args)
         return -1;
 
-    const char *session_type = getenv("XDG_SESSION_TYPE");
-    if (!session_type) {
-        fprintf(stderr, "ERROR: Could not find `XDG_SESSION_TYPE` env var.\n");
-        return -1;
-    }
-    if (SDL_strcmp(session_type, "wayland") == 0) {
-        SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+    popt_t opt = parse_args(argc, argv);
+
+    if (opt.check_wayland) {
+        const char *session_type = getenv("XDG_SESSION_TYPE");
+        if (!session_type) {
+            fprintf(stderr,
+                    "ERROR: Could not find `XDG_SESSION_TYPE` env var.\n");
+            return -1;
+        }
+        if (SDL_strcmp(session_type, "wayland") == 0) {
+            SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
+        }
     }
 
     state_t state = state_init();
 
-    window_t w = init_window();
-    if (window_init(&w) < 0) {
+    window_t w = window_init();
+    if (window_SDL_init(&w) < 0) {
         return 1;
     }
     w.state = &state;
 
-    load_image(&w, argv[1]);
+    load_image(&w, opt.file_in.data[0].data);
 
     window_loop(&w);
 
+    parse_args_deinit(&opt);
     state_deinit(&state);
     window_deinit(&w);
     return 0;

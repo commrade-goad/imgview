@@ -1,4 +1,4 @@
-#include "state.h"
+#include "include/state.h"
 
 void state_deinit(state_t *state) {
     str_deinit(&state->cmd_buffer);

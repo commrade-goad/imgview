@@ -3,10 +3,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "eval.h"
-#include "image.h"
-#include "wcontrol.h"
-#include "str.h"
+#include "include/eval.h"
+#include "include/image.h"
+#include "include/wcontrol.h"
+#include "include/str.h"
 
 bool evaluate_command(window_t *w) {
     if (w->state->cmd_buffer.len <= 0)

@@ -19,9 +19,8 @@ typedef struct {
     size_t x, y;
 } vec2_t;
 
-window_t init_window();
-
-int window_init(window_t *w);
+window_t window_init();
+int window_SDL_init(window_t *w);
 void window_loop(window_t *w);
 void window_deinit(window_t *w);
 void window_resize(window_t *win, int w, int h);
