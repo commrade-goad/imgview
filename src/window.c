@@ -24,10 +24,10 @@ int window_SDL_init(window_t *w) {
     return 0;
 }
 
-void _set_window_size_fromtxt(window_t *win) {
-    if (win->state->texture->w > (int)WINDOW_SIZE_LIMIT.x ||
-        win->state->texture->h > (int)WINDOW_SIZE_LIMIT.y) {
-        window_resize(win, WINDOW_SIZE_LIMIT.x, WINDOW_SIZE_LIMIT.y);
+void _set_window_size_fromtxt(window_t *win, vec2_t ws) {
+    if (win->state->texture->w > (int)ws.x ||
+        win->state->texture->h > (int)ws.y) {
+        window_resize(win, ws.x, ws.y);
     } else {
         window_resize(win, win->state->texture->w, win->state->texture->h);
     }
@@ -52,12 +52,13 @@ void window_render(window_t *w) {
     SDL_RenderPresent(w->ren);
 }
 
-void window_loop(window_t *w) {
-    _set_window_size_fromtxt(w);
+void window_loop(window_t *w, vec2_t ws) {
     SDL_Event event;
 
     Uint64 current_time = SDL_GetTicksNS();
     Uint64 future_time = SDL_GetTicksNS();
+
+    _set_window_size_fromtxt(w, ws);
 
     while (!w->quit) {
         future_time = SDL_GetTicksNS();

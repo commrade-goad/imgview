@@ -1,11 +1,14 @@
 #ifndef ARGPARSE_H_
 #define ARGPARSE_H_
 
-#include "str.h"
 #include <stdio.h>
+
+#include "window.h"
+#include "str.h"
 
 typedef struct {
     bool check_wayland;
+    vec2_t ws;
     arrstr_t file_in;
 } popt_t;
 

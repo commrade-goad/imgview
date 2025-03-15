@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/argparse.h"
 #include "include/image.h"
 #include "include/state.h"
 #include "include/window.h"
-#include "include/argparse.h"
 
 int main(int argc, char *argv[]) {
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     load_image(&w, opt.file_in.data[0].data);
 
-    window_loop(&w);
+    window_loop(&w, (vec2_t){.x = opt.ws.x, .y = opt.ws.y});
 
     parse_args_deinit(&opt);
     state_deinit(&state);
