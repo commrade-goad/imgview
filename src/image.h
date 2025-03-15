@@ -3,10 +3,10 @@
 
 #include <SDL3/SDL.h>
 #include <Imlib2.h>
+
 #include "window.h"
 
-void load_image(struct window_t *win, const char *img_path);
-void center_image(struct window_t *win);
+void load_image(window_t *win, const char *img_path);
+void center_image(window_t *win);
 
 #endif // IMAGE_H_
-

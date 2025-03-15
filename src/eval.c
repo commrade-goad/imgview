@@ -1,18 +1,18 @@
-#include "eval.h"
-#include "src/image.h"
-#include "str.h"
-
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 
-bool evaluate_command(struct window_t *w) {
+#include "eval.h"
+#include "src/image.h"
+#include "str.h"
+
+bool evaluate_command(window_t *w) {
     if (w->state->cmd_buffer.len <= 0)
         return false;
     str_t *cmd = &w->state->cmd_buffer;
     printf("submiting cmd: %s\n", cmd->data);
-    struct Token tokens;
+    token_t tokens;
     tokenize(cmd, &tokens);
     switch (tokens.kind) {
     case TReset:
@@ -20,16 +20,13 @@ bool evaluate_command(struct window_t *w) {
         center_image(w);
         break;
     case TZoom:
-        assert("Not implemented");
-        /*do_zoom(w, tokens.value);*/
+        printf("NOT YET IMPLEMENTED\n");
         break;
     case TNext:
-        assert("Not implemented");
-        /*next_image(w, tokens.value);*/
+        printf("NOT YET IMPLEMENTED\n");
         break;
     case TPrev:
-        assert("Not implemented");
-        /*prev_image(w, tokens.value);*/
+        printf("NOT YET IMPLEMENTED\n");
         break;
     default:
         return false;
@@ -37,14 +34,14 @@ bool evaluate_command(struct window_t *w) {
     return true;
 }
 
-void tokenize(str_t *cmd, struct Token *tokens) {
+void tokenize(str_t *cmd, token_t *token) {
     if (cmd->len <= 0) {
-        tokens->kind = TUnknown;
+        token->kind = TUnknown;
         return;
     }
     // reset is a special case that doesn't need any additional arguments
     if (cmd->data[0] == RESET) {
-        *tokens = (struct Token){
+        *token = (token_t){
             .kind = TReset,
             .value = 0,
         };
@@ -55,7 +52,7 @@ void tokenize(str_t *cmd, struct Token *tokens) {
     size_t buffer_len = 0;
     while (*cursor != '\0') {
         if (buffer_len >= 4) {
-            tokens->kind = TUnknown;
+            token->kind = TUnknown;
             return;
         }
         if (isdigit(*cursor)) {
@@ -64,22 +61,22 @@ void tokenize(str_t *cmd, struct Token *tokens) {
         } else if (buffer_len > 0 && buffer_len < 4) {
             switch (*cursor) {
             case ZOOM:
-                tokens->kind = TZoom;
-                tokens->value = atoi(buffer);
+                token->kind = TZoom;
+                token->value = atoi(buffer);
                 break;
             case NEXT:
-                tokens->kind = TNext;
-                tokens->value = atoi(buffer);
+                token->kind = TNext;
+                token->value = atoi(buffer);
                 break;
             case PREV:
-                tokens->kind = TPrev;
-                tokens->value = atoi(buffer);
+                token->kind = TPrev;
+                token->value = atoi(buffer);
                 break;
             default:
-                tokens->kind = TUnknown;
+                token->kind = TUnknown;
                 break;
             }
-            if (tokens->kind != TUnknown) {
+            if (token->kind != TUnknown) {
                 buffer_len = 0;
                 break;
             }

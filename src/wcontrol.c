@@ -6,17 +6,11 @@
 #include "str.h"
 #include "wcontrol.h"
 
-bool check_viewport(struct window_t *w) {
-    if ((w->state->rec.x + w->state->rec.w) <= 0) {
-        return false;
-    }
-    return true;
-}
-
-void do_zoom(struct window_t *w, int zoom_lvl) {
-    struct state_t *s = w->state;
+void wcontrol_zoom(window_t *w, int zoom_lvl) {
+    state_t *s = w->state;
     s->can_reset = false;
-    if (s->zoom + zoom_lvl < 10 || s->zoom + zoom_lvl > 500) {
+    size_t new_zoom_val = s->zoom + zoom_lvl;
+    if (new_zoom_val < 10 || new_zoom_val > 500) {
         return;
     }
 
@@ -30,56 +24,35 @@ void do_zoom(struct window_t *w, int zoom_lvl) {
     s->rec.h = round(s->texture->h * zoom_factor);
     s->rec.x -= (s->rec.w - old_width) / 2;
     s->rec.y -= (s->rec.h - old_height) / 2;
-
-    /*
-    // Ensure the image stays within the window boundaries if needed
-    struct vec2_t winsize = get_window_size(w);
-
-    // Optional: If you want to keep the image within window bounds
-    // You can uncomment these checks
-    // Adjust x position if image goes outside window
-    if (s->rec.x < 0) {
-        s->rec.x = 0;
-    } else if (s->rec.x + s->rec.w > winsize.x) {
-        s->rec.x = winsize.x - s->rec.w;
-    }
-
-    // Adjust y position if image goes outside window
-    if (s->rec.y < 0) {
-        s->rec.y = 0;
-    } else if (s->rec.y + s->rec.h > winsize.y) {
-        s->rec.y = winsize.y - s->rec.h;
-    }
-    */
 }
 
-void do_move(struct window_t *w, int dx, int dy) {
+void wcontrol_move(window_t *w, int dx, int dy) {
     w->state->can_reset = false;
     SDL_FRect *state_rec = &w->state->rec;
     state_rec->x += dx;
     state_rec->y += dy;
 }
 
-void handle_event(struct window_t *w, SDL_Event *e) {
+void wcontrol_handle_event(window_t *w, SDL_Event *e) {
     const bool *key_state = SDL_GetKeyboardState(NULL);
     if (key_state[SDL_SCANCODE_ESCAPE]) {
         w->quit = true;
         return;
     }
 
-    int movement = 20;
-    const int zoom_incr = 10;
+    const int movement_incr = 20;
+    const int zoom_incr     = 10;
 
     // only available in normal mode
     if (!w->state->command_mode) {
         if (key_state[SDL_SCANCODE_H])
-            do_move(w, movement, 0);
+            wcontrol_move(w, movement_incr, 0);
         if (key_state[SDL_SCANCODE_J])
-            do_move(w, 0, -movement);
+            wcontrol_move(w, 0, -movement_incr);
         if (key_state[SDL_SCANCODE_K])
-            do_move(w, 0, movement);
+            wcontrol_move(w, 0, movement_incr);
         if (key_state[SDL_SCANCODE_L])
-            do_move(w, -movement, 0);
+            wcontrol_move(w, -movement_incr, 0);
     }
 
     while (SDL_PollEvent(e)) {
@@ -91,10 +64,10 @@ void handle_event(struct window_t *w, SDL_Event *e) {
             // only available in normal mode
             if (!w->state->command_mode) {
                 if (e->key.key == SDLK_MINUS) {
-                    do_zoom(w, -zoom_incr);
+                    wcontrol_zoom(w, -zoom_incr);
                 }
                 if (e->key.key == SDLK_EQUALS) {
-                    do_zoom(w, zoom_incr);
+                    wcontrol_zoom(w, zoom_incr);
                 }
                 if (e->key.key == SDLK_R) {
                     w->state->can_reset = true;
@@ -108,7 +81,6 @@ void handle_event(struct window_t *w, SDL_Event *e) {
                 } else if (e->key.key == SDLK_RETURN) {
                     w->state->command_mode = false;
                     evaluate_command(w);
-                    /*printf("called %s\n", w->state->cmd_buffer.data);*/
                     str_clear(&w->state->cmd_buffer);
                 } else if (e->key.key == SDLK_ESCAPE) {
                     w->state->command_mode = false;

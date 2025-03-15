@@ -2,27 +2,30 @@
 #define WINDOW_H_
 
 #include <SDL3/SDL.h>
+
 #include "state.h"
 
-struct window_t {
+#define WINDOW_SIZE_LIMIT (vec2_t){1280, 720}
+
+typedef struct {
     SDL_Window *win;
     SDL_Renderer *ren;
     bool quit;
-    struct state_t *state;
+    state_t *state;
     size_t dt;
-};
+} window_t;
 
-struct vec2_t {
+typedef struct {
     size_t x, y;
-};
+} vec2_t;
 
-struct window_t init_window();
+window_t init_window();
 
-int init_SDL(struct window_t *w);
-void window_loop(struct window_t *w);
-void deinit_SDL(struct window_t *w);
-void resize_window(struct window_t *win, int w, int h);
-struct vec2_t get_window_size(struct window_t *w);
-void render(struct window_t *w);
+int window_init(window_t *w);
+void window_loop(window_t *w);
+void window_deinit(window_t *w);
+void window_resize(window_t *win, int w, int h);
+vec2_t get_window_size(window_t *w);
+void window_render(window_t *w);
 
 #endif // WINDOW_H_

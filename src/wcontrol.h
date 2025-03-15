@@ -3,9 +3,8 @@
 
 #include "window.h"
 
-void do_zoom(struct window_t *w, int zoom_lvl);
-void do_move(struct window_t *w, int dx, int dy);
-bool check_viewport(struct window_t *w);
-void handle_event(struct window_t *w, SDL_Event *e);
+void wcontrol_zoom(window_t *w, int zoom_lvl);
+void wcontrol_move(window_t *w, int dx, int dy);
+void wcontrol_handle_event(window_t *w, SDL_Event *e);
 
 #endif // WCONTROL_H_

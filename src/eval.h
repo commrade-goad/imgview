@@ -15,15 +15,15 @@ typedef enum {
     TNext,
     TPrev,
     TUnknown
-} TKind;
+} tkind_t;
 
-struct Token{
-    TKind kind;
+typedef struct {
+    tkind_t kind;
     int value;
-};
+} token_t;
 
-void tokenize(str_t *cmd, struct Token *tokens);
-bool evaluate_command(struct window_t *w);
+void tokenize(str_t *cmd, token_t *token);
+bool evaluate_command(window_t *w);
 
 #endif // EVAL_H_
 

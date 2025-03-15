@@ -1,12 +1,12 @@
 #include "state.h"
 
-void deinit_state(struct state_t *state) {
+void state_deinit(state_t *state) {
     str_deinit(&state->cmd_buffer);
     SDL_DestroyTexture(state->texture);
 }
 
-struct state_t init_state() {
-    return (struct state_t){
+state_t state_init() {
+    return (state_t){
         .zoom = 100,
         .texture = NULL,
         .rec = {0},

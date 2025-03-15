@@ -31,26 +31,19 @@ int main(int argc, char **argv) {
         SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland");
     }
 
-    struct state_t state = init_state();
+    state_t state = state_init();
 
-    struct window_t w = init_window();
-    if (init_SDL(&w) < 0) {
+    window_t w = init_window();
+    if (window_init(&w) < 0) {
         return 1;
     }
     w.state = &state;
 
     load_image(&w, argv[1]);
 
-    state.rec = (SDL_FRect){
-        .w = state.texture->w,
-        .h = state.texture->h,
-        .x = 0,
-        .y = 0,
-    };
-
     window_loop(&w);
 
-    deinit_state(&state);
-    deinit_SDL(&w);
+    state_deinit(&state);
+    window_deinit(&w);
     return 0;
 }

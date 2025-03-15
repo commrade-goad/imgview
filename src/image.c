@@ -1,8 +1,9 @@
-#include "image.h"
 #include <math.h>
 #include <stdio.h>
 
-void generate_texture(DATA32 *image_data, struct window_t *w) {
+#include "image.h"
+
+void generate_texture(DATA32 *image_data, window_t *w) {
     int img_width = imlib_image_get_width();
     int img_height = imlib_image_get_height();
 
@@ -15,9 +16,11 @@ void generate_texture(DATA32 *image_data, struct window_t *w) {
                 SDL_GetError());
         return;
     }
+
     if (w->ren == NULL || w->state == NULL)
         return;
     w->state->texture = SDL_CreateTextureFromSurface(w->ren, surface);
+
     if (!w->state->texture) {
         fprintf(stderr,
                 "ERROR: Failed to create the texture from the surface %s\n",
@@ -27,9 +30,9 @@ void generate_texture(DATA32 *image_data, struct window_t *w) {
     SDL_DestroySurface(surface);
 }
 
-void center_image(struct window_t *win) {
-    struct state_t *s = win->state;
-    struct vec2_t winsize = get_window_size(win);
+void center_image(window_t *win) {
+    state_t *s = win->state;
+    vec2_t winsize = get_window_size(win);
 
     double window_aspect = (double)winsize.x / winsize.y;
     double image_aspect = (double)s->texture->w / s->texture->h;
@@ -45,10 +48,11 @@ void center_image(struct window_t *win) {
     s->rec.x = round((winsize.x - s->rec.w) / 2);
     s->rec.y = round((winsize.y - s->rec.h) / 2);
 
+    // will add clamp later....
     s->zoom = round((s->rec.w / s->texture->w) * 100);
 }
 
-void load_image(struct window_t *win, const char *img_path) {
+void load_image(window_t *win, const char *img_path) {
     imlib_set_cache_size(10 * 1024 * 1024);
     Imlib_Image img = imlib_load_image(img_path);
     if (!img) {
