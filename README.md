@@ -30,8 +30,3 @@ meson compile -C build
 ## Args
 - `-x` to specify to use X11 or XWayland (disabling the check for XDG_CURRENT_SESSION env)
 - `-w WxH` to specify the size of the window (work great with `-x` on wayland kinda meh...)
-
-## Note
-still in _dev_ it didn't support alot of stuff example:
-
-- open more than 1 file.
