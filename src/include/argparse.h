@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "window.h"
+#include "vec.h"
 #include "str.h"
 
 typedef struct {

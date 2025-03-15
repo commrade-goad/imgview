@@ -53,7 +53,7 @@ popt_t parse_args(int argc, char *argv[]) {
             }
 
             if (xpos < 0) {
-                fprintf(stderr, "ERROR: Not a valid XxY format.\n");
+                fprintf(stderr, "ERROR: Not a valid WxH format.\n");
                 return opt;
             }
 
@@ -72,4 +72,6 @@ popt_t parse_args(int argc, char *argv[]) {
     return opt;
 }
 
-void parse_args_deinit(popt_t *popt) { arrstr_deinit(&popt->file_in); }
+void parse_args_deinit(popt_t *popt) {
+    arrstr_deinit(&popt->file_in);
+}

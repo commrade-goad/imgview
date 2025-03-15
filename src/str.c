@@ -40,7 +40,9 @@ void str_pop_chr(str_t *str) {
 
 void str_clear(str_t *str) {
     str->len = 0;
-    str->data[0] = '\0';
+    if (str->data) {
+        str->data[0] = '\0';
+    }
 }
 
 void str_push(str_t *str, const char *data) {
@@ -59,7 +61,7 @@ arrstr_t arrstr_init(int cap) {
         cap = 10;
     }
     arrstr_t a = {0};
-    a = (arrstr_t){.len = 1, .cap = cap, .data = malloc(sizeof(str_t) * cap)};
+    a = (arrstr_t){.len = 0, .cap = cap, .data = malloc(sizeof(str_t) * cap)};
     return a;
 }
 
@@ -71,12 +73,15 @@ void arrstr_deinit(arrstr_t *astr) {
 }
 
 void arrstr_push(arrstr_t *astr, const char *c) {
+    if (!astr || !c) return;
     if (astr->len >= astr->cap) {
         astr->cap *= 2;
         astr->data = realloc(astr->data, sizeof(str_t) * astr->cap);
     }
-    astr->data[astr->len - 1] = str_init(strlen(c));
-    str_push(&astr->data[astr->len - 1], c);
+
+    str_t new_str = str_init(-1); // Initialize with default capacity
+    str_push(&new_str, c);        // Copy the string content
+
+    astr->data[astr->len] = new_str;
     astr->len++;
 }
-

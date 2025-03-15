@@ -1,8 +1,10 @@
 #include "include/state.h"
 
 void state_deinit(state_t *state) {
-    str_deinit(&state->cmd_buffer);
-    SDL_DestroyTexture(state->texture);
+    if (state) {
+        str_deinit(&state->cmd_buffer);
+        SDL_DestroyTexture(state->texture);
+    }
 }
 
 state_t state_init() {

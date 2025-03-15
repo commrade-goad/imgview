@@ -33,7 +33,7 @@ void wcontrol_move(window_t *w, int dx, int dy) {
     state_rec->y += dy;
 }
 
-void wcontrol_handle_event(window_t *w, SDL_Event *e) {
+void wcontrol_handle_event(window_t *w, SDL_Event *e, smanager_t *s) {
     const bool *key_state = SDL_GetKeyboardState(NULL);
     if (key_state[SDL_SCANCODE_ESCAPE]) {
         w->quit = true;
@@ -41,7 +41,7 @@ void wcontrol_handle_event(window_t *w, SDL_Event *e) {
     }
 
     const int movement_incr = 20;
-    const int zoom_incr     = 10;
+    const int zoom_incr = 10;
 
     // only available in normal mode
     if (!w->state->command_mode) {
@@ -73,6 +73,14 @@ void wcontrol_handle_event(window_t *w, SDL_Event *e) {
                     w->state->can_reset = true;
                     w->state->zoom = 100;
                 }
+                if (e->key.key == SDLK_P) {
+                    smanager_prev(s, 1);
+                    smanager_swap_w_state(w, s);
+                }
+                if (e->key.key == SDLK_N) {
+                    smanager_next(s, 1);
+                    smanager_swap_w_state(w, s);
+                }
             }
             // only available in command mode
             if (w->state->command_mode) {
@@ -80,7 +88,7 @@ void wcontrol_handle_event(window_t *w, SDL_Event *e) {
                     str_pop_chr(&w->state->cmd_buffer);
                 } else if (e->key.key == SDLK_RETURN) {
                     w->state->command_mode = false;
-                    evaluate_command(w);
+                    evaluate_command(w, s);
                     str_clear(&w->state->cmd_buffer);
                 } else if (e->key.key == SDLK_ESCAPE) {
                     w->state->command_mode = false;
@@ -96,9 +104,7 @@ void wcontrol_handle_event(window_t *w, SDL_Event *e) {
             // global hotkey.
             if (e->key.key == SDLK_SEMICOLON) {
                 w->state->command_mode = !w->state->command_mode;
-                if (!w->state->command_mode) {
-                    str_clear(&w->state->cmd_buffer);
-                }
+                str_clear(&w->state->cmd_buffer);
             }
             break;
         default:

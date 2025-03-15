@@ -52,8 +52,10 @@ void window_render(window_t *w) {
     SDL_RenderPresent(w->ren);
 }
 
-void window_loop(window_t *w, vec2_t ws) {
+void window_loop(window_t *w, void *s, vec2_t ws) {
     SDL_Event event;
+
+    smanager_t sman = *(smanager_t *)s;
 
     Uint64 current_time = SDL_GetTicksNS();
     Uint64 future_time = SDL_GetTicksNS();
@@ -65,11 +67,12 @@ void window_loop(window_t *w, vec2_t ws) {
         w->dt = future_time - current_time / 1000000;
         current_time = future_time;
 
-        if (w->state->can_reset)
-            center_image(w);
-
-        wcontrol_handle_event(w, &event);
-        window_render(w);
+        if (w->state) {
+            if (w->state->can_reset)
+                center_image(w);
+            wcontrol_handle_event(w, &event, &sman);
+            window_render(w);
+        }
     }
 }
 

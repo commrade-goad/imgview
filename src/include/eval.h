@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "window.h"
+#include "smanager.h"
 
 #define RESET 'r'
 #define ZOOM  'z'
@@ -23,7 +24,7 @@ typedef struct {
 } token_t;
 
 void tokenize(str_t *cmd, token_t *token);
-bool evaluate_command(window_t *w);
+bool evaluate_command(window_t *w, smanager_t *s);
 
 #endif // EVAL_H_
 

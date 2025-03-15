@@ -6,7 +6,7 @@
 
 #include "include/argparse.h"
 #include "include/image.h"
-#include "include/state.h"
+#include "include/smanager.h"
 #include "include/window.h"
 
 int main(int argc, char *argv[]) {
@@ -30,20 +30,21 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    state_t state = state_init();
+    smanager_t sman = smanager_init(10);
 
     window_t w = window_init();
     if (window_SDL_init(&w, opt.ws) < 0) {
         return 1;
     }
-    w.state = &state;
 
-    load_image(&w, opt.file_in.data[0].data);
+    for (int i = 0; i < (int)opt.file_in.len; i++) {
+        smanager_create(&sman, &w, opt.file_in.data[i].data);
+    }
 
-    window_loop(&w, opt.ws);
+    window_loop(&w, (void*) &sman, opt.ws);
 
     parse_args_deinit(&opt);
-    state_deinit(&state);
+    smanager_deinit(&sman);
     window_deinit(&w);
     return 0;
 }

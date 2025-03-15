@@ -48,7 +48,6 @@ void center_image(window_t *win) {
     s->rec.x = round((winsize.x - s->rec.w) / 2);
     s->rec.y = round((winsize.y - s->rec.h) / 2);
 
-    // will add clamp later....
     s->zoom = round((s->rec.w / s->texture->w) * 100);
 }
 

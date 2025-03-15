@@ -18,6 +18,7 @@ executable(
   'src/state.c', 'src/image.c',
   'src/wcontrol.c', 'src/str.c',
   'src/eval.c', 'src/argparse.c',
+  'src/smanager.c',
   dependencies: [imlib2, sdl3],
   install : true,
   link_args : ['-lm']

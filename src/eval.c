@@ -5,30 +5,30 @@
 
 #include "include/eval.h"
 #include "include/image.h"
-#include "include/wcontrol.h"
 #include "include/str.h"
+#include "include/wcontrol.h"
 
-bool evaluate_command(window_t *w) {
+bool evaluate_command(window_t *w, smanager_t *s) {
     if (w->state->cmd_buffer.len <= 0)
         return false;
     str_t *cmd = &w->state->cmd_buffer;
-    printf("submiting cmd: %s\n", cmd->data);
     token_t token;
     tokenize(cmd, &token);
     switch (token.kind) {
     case TReset:
-        printf("INFO: Reseting the image pos.\n");
         center_image(w);
         break;
     case TZoom:
-        size_t diff = token.value - w->state->zoom;
+        int diff = token.value - w->state->zoom;
         wcontrol_zoom(w, diff);
         break;
     case TNext:
-        printf("NOT YET IMPLEMENTED\n");
+        smanager_next(s, token.value);
+        smanager_swap_w_state(w, s);
         break;
     case TPrev:
-        printf("NOT YET IMPLEMENTED\n");
+        smanager_prev(s, token.value);
+        smanager_swap_w_state(w, s);
         break;
     default:
         return false;

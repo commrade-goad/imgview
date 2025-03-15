@@ -24,6 +24,7 @@ meson compile -C build
 | hjkl | move around              |
 | +, - | zoom in and zoom out     |
 | r    | reset the view to fit in |
+| n, p | next or prev image       |
 | ;    | toggle command mode      |
 
 ## Args
