@@ -4,7 +4,8 @@
 #include <stdio.h>
 
 #include "eval.h"
-#include "src/image.h"
+#include "image.h"
+#include "wcontrol.h"
 #include "str.h"
 
 bool evaluate_command(window_t *w) {
@@ -12,15 +13,16 @@ bool evaluate_command(window_t *w) {
         return false;
     str_t *cmd = &w->state->cmd_buffer;
     printf("submiting cmd: %s\n", cmd->data);
-    token_t tokens;
-    tokenize(cmd, &tokens);
-    switch (tokens.kind) {
+    token_t token;
+    tokenize(cmd, &token);
+    switch (token.kind) {
     case TReset:
         printf("INFO: Reseting the image pos.\n");
         center_image(w);
         break;
     case TZoom:
-        printf("NOT YET IMPLEMENTED\n");
+        size_t diff = token.value - w->state->zoom;
+        wcontrol_zoom(w, diff);
         break;
     case TNext:
         printf("NOT YET IMPLEMENTED\n");
