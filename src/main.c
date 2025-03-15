@@ -33,14 +33,14 @@ int main(int argc, char *argv[]) {
     state_t state = state_init();
 
     window_t w = window_init();
-    if (window_SDL_init(&w) < 0) {
+    if (window_SDL_init(&w, opt.ws) < 0) {
         return 1;
     }
     w.state = &state;
 
     load_image(&w, opt.file_in.data[0].data);
 
-    window_loop(&w, (vec2_t){.x = opt.ws.x, .y = opt.ws.y});
+    window_loop(&w, opt.ws);
 
     parse_args_deinit(&opt);
     state_deinit(&state);

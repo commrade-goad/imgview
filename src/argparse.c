@@ -57,13 +57,14 @@ popt_t parse_args(int argc, char *argv[]) {
                 return opt;
             }
 
-            char *rside = current + (xpos + 1);
+            size_t rside = atoll(current + (xpos + 1));
             current[xpos] = '\0';
-            char *lside = current;
+            size_t lside = atoll(current);
+            current[xpos] = 'x';
 
             opt.ws = (vec2_t){
-                .x = atoll(lside),
-                .y = atoll(rside),
+                .x = lside > 100 ? lside : 1280,
+                .y = rside > 100 ? rside : 720,
             };
             capture_mode = false;
         }

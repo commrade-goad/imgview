@@ -4,13 +4,13 @@
 #include "include/wcontrol.h"
 #include "include/window.h"
 
-int window_SDL_init(window_t *w) {
+int window_SDL_init(window_t *w, vec2_t ws) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "ERROR: SDL could not initialize! SDL_Error: %s\n",
                 SDL_GetError());
         return -1;
     }
-    if (!SDL_CreateWindowAndRenderer("imgview", 360, 360,
+    if (!SDL_CreateWindowAndRenderer("imgview", ws.x, ws.y,
                                      SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN,
                                      &w->win, &w->ren)) {
         fprintf(
