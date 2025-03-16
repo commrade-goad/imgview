@@ -5,7 +5,6 @@
 #include <stdlib.h>
 
 #include "include/argparse.h"
-#include "include/image.h"
 #include "include/smanager.h"
 #include "include/window.h"
 
@@ -38,9 +37,19 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < (int)opt.file_in.len; i++) {
-        smanager_create(&sman, &w, opt.file_in.data[i].data);
+        if (!smanager_create(&sman, &w, opt.file_in.data[i].data)) {
+            fprintf(stderr, "ERROR: Failed to create the state.\n");
+        }
     }
 
+    if (w.state->texture == NULL) {
+        if (!smanager_swap_w_state(&w, &sman)) {
+            parse_args_deinit(&opt);
+            smanager_deinit(&sman);
+            window_deinit(&w);
+            return -1;
+        }
+    }
     window_loop(&w, (void*) &sman, opt.ws);
 
     parse_args_deinit(&opt);

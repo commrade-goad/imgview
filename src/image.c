@@ -3,7 +3,7 @@
 
 #include "include/image.h"
 
-void generate_texture(DATA32 *image_data, window_t *w) {
+bool generate_texture(DATA32 *image_data, window_t *w) {
     int img_width = imlib_image_get_width();
     int img_height = imlib_image_get_height();
 
@@ -14,20 +14,21 @@ void generate_texture(DATA32 *image_data, window_t *w) {
     if (!surface) {
         fprintf(stderr, "ERROR: Failed to create the surface %s\n",
                 SDL_GetError());
-        return;
+        return false;
     }
 
     if (w->ren == NULL || w->state == NULL)
-        return;
+        return false;
     w->state->texture = SDL_CreateTextureFromSurface(w->ren, surface);
 
     if (!w->state->texture) {
         fprintf(stderr,
                 "ERROR: Failed to create the texture from the surface %s\n",
                 SDL_GetError());
-        return;
+        return false;
     }
     SDL_DestroySurface(surface);
+    return true;
 }
 
 void center_image(window_t *win) {
@@ -56,7 +57,6 @@ void load_image(window_t *win, const char *img_path) {
     Imlib_Image img = imlib_load_image(img_path);
     if (!img) {
         fprintf(stderr, "ERROR: Failed to load image %s\n", img_path);
-        SDL_Quit();
         return;
     }
     imlib_context_set_image(img);
@@ -65,9 +65,8 @@ void load_image(window_t *win, const char *img_path) {
     }
 
     DATA32 *image_data = imlib_image_get_data();
-    generate_texture(image_data, win);
-
-    center_image(win);
-
+    if (generate_texture(image_data, win)) {
+        center_image(win);
+    };
     imlib_free_image();
 }

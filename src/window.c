@@ -68,7 +68,7 @@ void window_loop(window_t *w, void *s, vec2_t ws) {
         current_time = future_time;
 
         if (w->state) {
-            if (w->state->can_reset)
+            if (w->state->can_reset && w->state->texture != NULL)
                 center_image(w);
             wcontrol_handle_event(w, &event, &sman);
             window_render(w);

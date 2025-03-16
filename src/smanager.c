@@ -19,23 +19,31 @@ void smanager_deinit(smanager_t *smgr) {
     free(smgr->state);
 }
 
-void smanager_create(smanager_t *s, window_t *win, const char *file) {
+bool smanager_create(smanager_t *s, window_t *win, const char *file) {
     s->state[s->len] = state_init();
     win->state = &s->state[s->len];
     load_image(win, file);
+    if (win->state->texture == NULL) {
+        return false;
+    }
     s->len += 1;
     smanager_swap_w_state(win, s);
+    return true;
 }
 
-void smanager_swap_w_state(window_t *w, smanager_t *s) {
-    w->state = &s->state[s->active];
+bool smanager_swap_w_state(window_t *w, smanager_t *s) {
+    if (s->active < (int)s->len) {
+        w->state = &s->state[s->active];
+        return true;
+    }
+    return false;
 }
 
 void smanager_next(smanager_t *s, int n) {
     if (s->active + n < (int)s->len)
         s->active += 1;
 }
-void smanager_prev(smanager_t *s, int n){
+void smanager_prev(smanager_t *s, int n) {
     if (s->active - n >= 0)
         s->active -= 1;
 }
