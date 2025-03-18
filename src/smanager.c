@@ -20,12 +20,16 @@ void smanager_deinit(smanager_t *smgr) {
 }
 
 bool smanager_create(smanager_t *s, window_t *win, const char *file) {
-    s->state[s->len] = state_init();
-    win->state = &s->state[s->len];
-    load_image(win, file);
+    state_t new_state = state_init();
+    win->state = &new_state;
+    if (!load_image(win, file))
+        return false;
     if (win->state->texture == NULL) {
+        if (!smanager_swap_w_state(win, s))
+            win->state = NULL;
         return false;
     }
+    s->state[s->len] = new_state;
     s->len += 1;
     smanager_swap_w_state(win, s);
     return true;

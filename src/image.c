@@ -52,12 +52,12 @@ void center_image(window_t *win) {
     s->zoom = round((s->rec.w / s->texture->w) * 100);
 }
 
-void load_image(window_t *win, const char *img_path) {
+bool load_image(window_t *win, const char *img_path) {
     imlib_set_cache_size(10 * 1024 * 1024);
     Imlib_Image img = imlib_load_image(img_path);
     if (!img) {
         fprintf(stderr, "ERROR: Failed to load image %s\n", img_path);
-        return;
+        return false;
     }
     imlib_context_set_image(img);
     if (!imlib_image_has_alpha()) {
@@ -67,6 +67,9 @@ void load_image(window_t *win, const char *img_path) {
     DATA32 *image_data = imlib_image_get_data();
     if (generate_texture(image_data, win)) {
         center_image(win);
+        imlib_free_image();
+        return true;
     };
     imlib_free_image();
+    return false;
 }

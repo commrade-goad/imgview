@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (w.state->texture == NULL) {
+    if (w.state == NULL || w.state->texture == NULL) {
         if (!smanager_swap_w_state(&w, &sman)) {
             parse_args_deinit(&opt);
             smanager_deinit(&sman);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
             return -1;
         }
     }
-    window_loop(&w, (void*) &sman, opt.ws);
+    window_loop(&w, (void *)&sman, opt.ws);
 
     parse_args_deinit(&opt);
     smanager_deinit(&sman);
