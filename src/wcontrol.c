@@ -34,9 +34,21 @@ void wcontrol_move(window_t *w, int dx, int dy) {
 }
 
 void wcontrol_handle_event(window_t *w, SDL_Event *e, smanager_t *s) {
+
     const bool *key_state = SDL_GetKeyboardState(NULL);
     if (key_state[SDL_SCANCODE_ESCAPE]) {
         w->quit = true;
+        return;
+    }
+
+    if (w->state->texture == NULL) {
+        while (SDL_PollEvent(e)) {
+            switch (e->type) {
+            case SDL_EVENT_QUIT:
+                w->quit = true;
+                return;
+            }
+        }
         return;
     }
 

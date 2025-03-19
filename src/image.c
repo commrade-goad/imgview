@@ -7,6 +7,8 @@ bool generate_texture(DATA32 *image_data, window_t *w) {
     int img_width = imlib_image_get_width();
     int img_height = imlib_image_get_height();
 
+    if (img_width <= 0 || img_height <= 0) return false;
+
     SDL_Surface *surface =
         SDL_CreateSurfaceFrom(img_width, img_height, SDL_PIXELFORMAT_BGRA32,
                               image_data, img_width * 4);
@@ -17,14 +19,17 @@ bool generate_texture(DATA32 *image_data, window_t *w) {
         return false;
     }
 
-    if (w->ren == NULL || w->state == NULL)
+    if (w->ren == NULL || w->state == NULL) {
+        SDL_DestroySurface(surface);
         return false;
+    }
     w->state->texture = SDL_CreateTextureFromSurface(w->ren, surface);
 
     if (!w->state->texture) {
         fprintf(stderr,
                 "ERROR: Failed to create the texture from the surface %s\n",
                 SDL_GetError());
+        SDL_DestroySurface(surface);
         return false;
     }
     SDL_DestroySurface(surface);
@@ -34,6 +39,8 @@ bool generate_texture(DATA32 *image_data, window_t *w) {
 void center_image(window_t *win) {
     state_t *s = win->state;
     vec2_t winsize = get_window_size(win);
+
+    if (s->texture == NULL) return;
 
     double window_aspect = (double)winsize.x / winsize.y;
     double image_aspect = (double)s->texture->w / s->texture->h;
@@ -66,9 +73,13 @@ bool load_image(window_t *win, const char *img_path) {
 
     DATA32 *image_data = imlib_image_get_data();
     if (generate_texture(image_data, win)) {
-        center_image(win);
+        if (win->state != NULL && win->state->texture != NULL) {
+            center_image(win);
+            imlib_free_image();
+            return true;
+        }
         imlib_free_image();
-        return true;
+        return false;
     };
     imlib_free_image();
     return false;

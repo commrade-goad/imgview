@@ -22,8 +22,10 @@ void smanager_deinit(smanager_t *smgr) {
 bool smanager_create(smanager_t *s, window_t *win, const char *file) {
     state_t new_state = state_init();
     win->state = &new_state;
-    if (!load_image(win, file))
+    if (!load_image(win, file)) {
+        win->state = NULL;
         return false;
+    }
     if (win->state->texture == NULL) {
         if (!smanager_swap_w_state(win, s))
             win->state = NULL;
