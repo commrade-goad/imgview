@@ -80,6 +80,7 @@ void tokenize(str_t *cmd, token_t *token) {
             }
             if (token->kind != TUnknown) {
                 buffer_len = 0;
+                memset(buffer, '\0', 4);
                 break;
             }
         }
