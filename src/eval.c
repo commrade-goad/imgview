@@ -15,21 +15,25 @@ bool evaluate_command(window_t *w, smanager_t *s) {
     token_t token;
     tokenize(cmd, &token);
     switch (token.kind) {
-    case TReset:
+    case TReset: {
         center_image(w);
         break;
-    case TZoom:
+    }
+    case TZoom: {
         int diff = token.value - w->state->zoom;
         wcontrol_zoom(w, diff);
         break;
-    case TNext:
+    }
+    case TNext: {
         smanager_next(s, token.value);
         smanager_swap_w_state(w, s);
         break;
-    case TPrev:
+    }
+    case TPrev: {
         smanager_prev(s, token.value);
         smanager_swap_w_state(w, s);
         break;
+    }
     default:
         return false;
     }
