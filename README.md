@@ -1,6 +1,20 @@
 # IMGVIEW
 a simple suckless like image viewer (no mouse needed)
 
+## Option
+
+By default it capped at 60FPS to change modify `src/window.c:7` in
+
+```c
+/* ... rest of the code  ... */
+
+#define FPS 60
+
+/* ... rest of the code  ... */
+```
+
+change to whatever fps target you want.
+
 ## Build
 
 __Configure Meson :__

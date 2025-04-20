@@ -12,9 +12,11 @@ typedef struct {
     bool quit;
     state_t *state;
     size_t dt;
+    int fps;
+    Uint64 fps_delay;
 } window_t;
 
-window_t window_init();
+window_t window_init(void);
 int window_SDL_init(window_t *w, vec2_t ws);
 void window_loop(window_t *w, void *s, vec2_t ws);
 void window_deinit(window_t *w);

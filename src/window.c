@@ -4,6 +4,8 @@
 #include "include/wcontrol.h"
 #include "include/window.h"
 
+#define FPS 60
+
 int window_SDL_init(window_t *w, vec2_t ws) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "ERROR: SDL could not initialize! SDL_Error: %s\n",
@@ -63,6 +65,9 @@ void window_loop(window_t *w, void *s, vec2_t ws) {
     _set_window_size_fromtxt(w, ws);
 
     while (!w->quit) {
+        /* to cap fps */
+        Uint64 frame_start = SDL_GetTicks();
+
         future_time = SDL_GetTicksNS();
         w->dt = future_time - current_time / 1000000;
         current_time = future_time;
@@ -73,6 +78,11 @@ void window_loop(window_t *w, void *s, vec2_t ws) {
             wcontrol_handle_event(w, &event, &sman);
             window_render(w);
         }
+
+        Uint64 frame_time = SDL_GetTicks() - frame_start;
+        if (frame_time < w->fps_delay) {
+            SDL_Delay(w->fps_delay - frame_time);
+        }
     }
 }
 
@@ -82,13 +92,15 @@ void window_deinit(window_t *w) {
     SDL_Quit();
 }
 
-window_t window_init() {
+window_t window_init(void) {
     return (window_t){
         .win = NULL,
         .ren = NULL,
         .quit = false,
         .state = NULL,
         .dt = 0,
+        .fps = FPS,
+        .fps_delay = 1000 / FPS
     };
 }
 
