@@ -33,6 +33,9 @@ bool generate_texture(DATA32 *image_data, window_t *w) {
         return false;
     }
     SDL_DestroySurface(surface);
+
+    if (!SDL_SetTextureScaleMode(w->state->texture, SDL_SCALEMODE_NEAREST)) return false;
+
     return true;
 }
 
